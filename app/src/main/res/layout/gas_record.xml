@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
+
+    <TextView
+        android:id="@+id/FillupMiles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="123,456 Miles"
+        android:textSize="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/FillupGallons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12.34 gallons"
+        android:textSize="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/FillupMiles" />
+
+    <TextView
+        android:id="@+id/FillupCost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$123.45"
+        android:textSize="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/FillupGallons" />
+
+    <TextView
+        android:id="@+id/FillupDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10/24/23"
+        android:textColor="#999"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/FillupTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10:44PM"
+        android:textColor="#999"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/FillupDate" />
+</androidx.constraintlayout.widget.ConstraintLayout>
