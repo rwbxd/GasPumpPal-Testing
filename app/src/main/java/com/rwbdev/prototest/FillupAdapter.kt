@@ -8,9 +8,11 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.google.protobuf.Timestamp
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
+import java.util.Locale
 
 class FillupAdapter(
     private val fillups: MutableList<Fillup>
@@ -53,9 +55,9 @@ class FillupAdapter(
             val Date = findViewById<TextView>(R.id.FillupDate)
             val Time = findViewById<TextView>(R.id.FillupTime)
 
-            Miles.text = curFillup.miles.toString() + " miles"
-            Gallons.text = curFillup.gallons.toString() + " gallons"
-            Cost.text = "$" + curFillup.cost.toString()
+            Miles.text = NumberFormat.getNumberInstance(Locale.US).format(curFillup.miles) + " miles"
+            Gallons.text = String.format("%.3f", curFillup.gallons) + " gallons"
+            Cost.text = "$" + String.format("%.2f", curFillup.cost)
             val date = timestampToDate(curFillup.time)
             val df = SimpleDateFormat("MM-dd-yyyy")
             Date.text = df.format(date)

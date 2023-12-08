@@ -6,10 +6,14 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -34,6 +38,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.canhub.cropper.CropImageView
+import com.google.android.material.R.*
+import com.google.android.material.R.color.material_dynamic_primary50
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
@@ -74,6 +80,8 @@ class MainActivity : AppCompatActivity() {
     private var cameraSummoner: View? = null;
 
     private lateinit var mGraphicOverlay: GraphicOverlay;
+
+    private var rotationDegrees = 0;
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -178,6 +186,9 @@ class MainActivity : AppCompatActivity() {
         backButton.setOnClickListener{
             stopCamera()
             hideCaptureButtons()
+            hideOverlayViews()
+            findViewById<CropImageView>(R.id.cropImageView).visibility = View.INVISIBLE;
+            hideCropButton()
         }
 
         val odoCamera = findViewById<Button>(R.id.btnOdometerCamera)
@@ -194,9 +205,18 @@ class MainActivity : AppCompatActivity() {
         val cropButton = findViewById<Button>(R.id.btnCrop)
         cropButton.setOnClickListener {
             var cmi : CropImageView = findViewById(R.id.cropImageView)
-            runTextRecognition(cmi.getCroppedImage()!!, 0)
+            val bitmap = cmi.getCroppedImage()
+            if (bitmap != null) runTextRecognition(bitmap)
             cmi.visibility = View.INVISIBLE;
             hideCropButton()
+        }
+
+        val discardButton = findViewById<Button>(R.id.btnDiscard)
+        discardButton.setOnClickListener {
+            var cmi : CropImageView = findViewById(R.id.cropImageView)
+            cmi.visibility = View.INVISIBLE;
+            hideCropButton()
+            hideOverlayViews()
         }
     }
 
@@ -281,10 +301,22 @@ class MainActivity : AppCompatActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
         cameraProvider.unbindAll()
+        findViewById<PreviewView>(R.id.viewFinder).visibility = View.GONE;
+    }
+
+    private fun resetCameraSummoner() {
+        cameraSummoner?.setBackgroundColor(getThemeColor(com.google.android.material.R.attr.colorAccent))
+        cameraSummoner = null;
+    }
+
+    private fun getThemeColor(attributeId: Int): Int {
+        val typedValue = TypedValue()
+        theme.resolveAttribute(attributeId, typedValue, true)
+        return ContextCompat.getColor(this, typedValue.resourceId)
     }
 
     private fun takePhoto() {
-        cameraSummoner = null;
+        resetCameraSummoner()
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
@@ -312,8 +344,9 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
-                    val rotationDegrees = image.imageInfo.rotationDegrees
-                    startCrop(imageProxyToBitmap(image))
+                    rotationDegrees = image.imageInfo.rotationDegrees
+                    var bm: Bitmap = imageProxyToBitmap(image)
+                    startCrop(bm.rotate(rotationDegrees.toFloat()))
                     super.onCaptureSuccess(image)
                     stopCamera()
                     hideCaptureButtons()
@@ -337,12 +370,17 @@ class MainActivity : AppCompatActivity() {
         showCropButton()
     }
 
+    fun Bitmap.rotate(degrees: Float): Bitmap =
+        Bitmap.createBitmap(this, 0, 0, width, height, Matrix().apply { postRotate(degrees) }, true)
+
     private fun specificCameraListenerFn(it: View?, miles: EditText?) {
         if (cameraSummoner == it) takePhoto()
         else {
+            resetCameraSummoner()
             cameraListenerFn()
             cameraTextbox = miles
             cameraSummoner = it
+            cameraSummoner?.setBackgroundColor(Color.parseColor("#9C27B0"))
         }
     }
 
@@ -374,7 +412,7 @@ class MainActivity : AppCompatActivity() {
     // OCR Functions
 
     private fun processTextRecognitionResult(texts: Text) {
-        showOverlayViews()
+        // showOverlayViews()
         val blocks: List<Text.TextBlock> = texts.getTextBlocks()
         if (blocks.size == 0) {
             makeToast("No text found")
@@ -392,7 +430,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun runTextRecognition(img: Bitmap, rotationDegrees: Int = 0) {
+    private fun runTextRecognition(img: Bitmap) {
         var iv: ImageView = findViewById(R.id.ocrView)
         var image: InputImage = InputImage.fromBitmap(img, rotationDegrees)
         var recognizer: TextRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
@@ -435,6 +473,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideCaptureButtons() {
+        resetCameraSummoner()
         findViewById<Button>(R.id.btnCapture).visibility = View.INVISIBLE
         findViewById<Button>(R.id.btnBack).visibility = View.INVISIBLE
         findViewById<PreviewView>(R.id.viewFinder).visibility = View.INVISIBLE
@@ -443,11 +482,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun showCropButton() {
         findViewById<Button>(R.id.btnCrop).visibility = View.VISIBLE
+        findViewById<Button>(R.id.btnDiscard).visibility = View.VISIBLE
         hideCameraButton()
         hideCaptureButtons()
     }
     private fun hideCropButton() {
         findViewById<Button>(R.id.btnCrop).visibility = View.INVISIBLE
+        findViewById<Button>(R.id.btnDiscard).visibility = View.INVISIBLE
         showCameraButton()
     }
 
