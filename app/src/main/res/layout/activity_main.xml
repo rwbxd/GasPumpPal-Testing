@@ -19,6 +19,17 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
+        android:id="@+id/btnCrop"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:importantForAutofill="no"
+        android:text="CROP"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnSubmit"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/btnCapture"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -93,11 +104,11 @@
         android:layout_height="50dp"
         android:ems="10"
         android:hint="Odometer Reading"
-        android:inputType="number"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal"
         app:layout_constraintBottom_toTopOf="@+id/etCost"
         app:layout_constraintEnd_toStartOf="@+id/btnOdometerCamera"
-        app:layout_constraintStart_toStartOf="parent"
-        android:importantForAutofill="no"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/etCost"
@@ -106,7 +117,7 @@
         android:ems="10"
         android:hint="Cost"
         android:importantForAutofill="no"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         app:layout_constraintBottom_toTopOf="@+id/etGallons"
         app:layout_constraintEnd_toStartOf="@+id/btnCostCamera"
         app:layout_constraintStart_toStartOf="parent" />
@@ -118,7 +129,7 @@
         android:ems="10"
         android:hint="Gallons"
         android:importantForAutofill="no"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         app:layout_constraintBottom_toTopOf="@+id/btnSubmit"
         app:layout_constraintEnd_toStartOf="@+id/btnGallonsCamera"
         app:layout_constraintStart_toStartOf="parent" />
@@ -127,7 +138,7 @@
         android:id="@+id/rvFillupList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/viewFinder"
+        app:layout_constraintBottom_toBottomOf="@+id/ocrView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -140,18 +151,30 @@
 
     <ImageView
         android:id="@+id/ocrView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/etMiles" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/etMiles"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rvFillupList" />
 
     <com.rwbdev.prototest.GraphicOverlay
         android:id="@+id/graphic_overlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/ocrView"
         app:layout_constraintEnd_toEndOf="@+id/ocrView"
         app:layout_constraintStart_toStartOf="@+id/ocrView"
         app:layout_constraintTop_toTopOf="@+id/ocrView" />
+
+    <com.canhub.cropper.CropImageView
+        android:id="@+id/cropImageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toTopOf="@+id/rvFillupList"
+        app:layout_constraintBottom_toBottomOf="@+id/ocrView"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

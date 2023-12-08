@@ -69,6 +69,8 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
 
+    implementation("com.vanniktech:android-image-cropper:4.5.0")
+
 
 }
 
